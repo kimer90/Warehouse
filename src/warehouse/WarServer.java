@@ -5,7 +5,6 @@
  */
 package warehouse;
 
-import entities.ArrivalWarehouse;
 import entities.Delivery;
 import entities.Facility;
 import entities.Goods;

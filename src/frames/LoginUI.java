@@ -5,7 +5,6 @@
  */
 package frames;
 
-import entities.Users;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
