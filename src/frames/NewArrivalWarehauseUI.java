@@ -184,74 +184,79 @@ public class NewArrivalWarehauseUI extends javax.swing.JFrame {
         Data data = new Data();
         data.setOperation(10);
         List<Object> list = new ArrayList<Object>();
-        for (int i =0; i < jTable1.getModel().getRowCount(); i++)
+        if (jTable1.getModel().getRowCount() == 0)
+        {JOptionPane.showMessageDialog(null, "Не создано ни одной позиции");}
+        else
         {
-            try
+            for (int i =0; i < jTable1.getModel().getRowCount(); i++)
             {
-                if (((String)jTable1.getModel().getValueAt(i, 0)).equals("") ||
-                        ((String)jTable1.getModel().getValueAt(i, 1)).equals("") ||
-                        jTable1.getModel().getValueAt(i, 2) == null ||
-                        ((String)jTable1.getModel().getValueAt(i, 3)).equals("") ||
-                        ((String)jTable1.getModel().getValueAt(i, 4)).equals(""))
+                try
                 {
-                    JOptionPane.showMessageDialog(null, "Заполните все поля.");
-                    break;
-                }
-                else if ((Integer)jTable1.getModel().getValueAt(i, 2) <= 0)
-                {
-                    JOptionPane.showMessageDialog(null, "Недопустимое колличество.");
-                    break;
-                }
-                else
-                {
-                    ArrivalWarehouse arr = new ArrivalWarehouse();
-                    for (Goods goods : MainUI.getGoodslist()) 
+                    if (((String)jTable1.getModel().getValueAt(i, 0)).equals("") ||
+                            ((String)jTable1.getModel().getValueAt(i, 1)).equals("") ||
+                            jTable1.getModel().getValueAt(i, 2) == null ||
+                            ((String)jTable1.getModel().getValueAt(i, 3)).equals("") ||
+                            ((String)jTable1.getModel().getValueAt(i, 4)).equals(""))
                     {
-                        if (goods.getName().equals((String)jTable1.getModel().getValueAt(i, 0)))
-                        {arr.setGoodsId(goods); System.err.println(goods.getId());}
+                        JOptionPane.showMessageDialog(null, "Заполните все поля.");
+                        break;
                     }
-                    for (Warehouses war : MainUI.getWarlist()) 
+                    else if ((Integer)jTable1.getModel().getValueAt(i, 2) <= 0)
                     {
-                        if (war.getName().equals((String)jTable1.getModel().getValueAt(i, 1)))
-                        {arr.setActivePointId(war); System.err.println(war.getId());}
+                        JOptionPane.showMessageDialog(null, "Недопустимое колличество.");
+                        break;
                     }
-                    arr.setAmount((Integer)jTable1.getModel().getValueAt(i, 2));
-                    arr.setTime(new Date());
-                    arr.setDocumentNumber((String)jTable1.getModel().getValueAt(i, 4));
-                    list.add(arr);
-                    if (i == jTable1.getModel().getRowCount() - 1)
+                    else
                     {
-                        int m = JOptionPane.showConfirmDialog(null, "Внести изменения в БД?", 
-                        "Внимание", JOptionPane.YES_NO_OPTION);
-                        if (m == JOptionPane.YES_OPTION)
+                        ArrivalWarehouse arr = new ArrivalWarehouse();
+                        for (Goods goods : MainUI.getGoodslist()) 
                         {
-                            data.setValues(list);
-                            Warehouse war = new Warehouse();
-                            if (war.connect() == WarInterface.OK) 
+                            if (goods.getName().equals((String)jTable1.getModel().getValueAt(i, 0)))
+                            {arr.setGoodsId(goods); System.err.println(goods.getId());}
+                        }
+                        for (Warehouses war : MainUI.getWarlist()) 
+                        {
+                            if (war.getName().equals((String)jTable1.getModel().getValueAt(i, 1)))
+                            {arr.setActivePointId(war); System.err.println(war.getId());}
+                        }
+                        arr.setAmount((Integer)jTable1.getModel().getValueAt(i, 2));
+                        arr.setTime(new Date());
+                        arr.setDocumentNumber((String)jTable1.getModel().getValueAt(i, 4));
+                        list.add(arr);
+                        if (i == jTable1.getModel().getRowCount() - 1)
+                        {
+                            int m = JOptionPane.showConfirmDialog(null, "Внести изменения в БД?", 
+                            "Внимание", JOptionPane.YES_NO_OPTION);
+                            if (m == JOptionPane.YES_OPTION)
                             {
-                                war.run(data);
-                                war.disconnect();
+                                data.setValues(list);
+                                Warehouse war = new Warehouse();
+                                if (war.connect() == WarInterface.OK) 
+                                {
+                                    war.run(data);
+                                    war.disconnect();
+                                }
+                                Data test = war.getTest();
+                                if (test.getOperation() == 0)
+                                {
+                                    JOptionPane.showMessageDialog(null, "Данные успешно внесены.");
+                                    dispose();
+                                    MainUI.getCatalog();
+                                }
+                                else if (test.getOperation() == -1)
+                                {JOptionPane.showMessageDialog(null, "Ошибка при внесении данных.");}
                             }
-                            Data test = war.getTest();
-                            if (test.getOperation() == 0)
-                            {
-                                JOptionPane.showMessageDialog(null, "Данные успешно внесены.");
-                                dispose();
-                                MainUI.getCatalog();
-                            }
-                            else if (test.getOperation() == -1)
-                            {JOptionPane.showMessageDialog(null, "Ошибка при внесении данных.");}
                         }
                     }
                 }
+                catch (NullPointerException ex)
+                {
+                    System.err.println("Error-> " + ex.getMessage());
+                    JOptionPane.showMessageDialog(null, "Заполните все поля.");
+                    break;
+                }
             }
-            catch (NullPointerException ex)
-            {
-                System.err.println("Error-> " + ex.getMessage());
-                JOptionPane.showMessageDialog(null, "Заполните все поля.");
-                break;
-            }
-        }    
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

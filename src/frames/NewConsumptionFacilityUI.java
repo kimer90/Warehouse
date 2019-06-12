@@ -205,83 +205,88 @@ public class NewConsumptionFacilityUI extends javax.swing.JFrame {
         Data data = new Data();
         data.setOperation(13);
         List<Object> list = new ArrayList<Object>();
-        for (int i =0; i < jTable1.getModel().getRowCount(); i++)
+        if (jTable1.getModel().getRowCount() == 0)
+        {JOptionPane.showMessageDialog(null, "Не создано ни одной позиции");}
+        else
         {
-            try
+            for (int i =0; i < jTable1.getModel().getRowCount(); i++)
             {
-                if (((String)jTable1.getModel().getValueAt(i, 0)).equals("") ||
-                    ((String)jTable1.getModel().getValueAt(i, 1)).equals("") ||
-                    jTable1.getModel().getValueAt(i, 2) == null ||
-                    ((String)jTable1.getModel().getValueAt(i, 3)).equals("") ||
-                    ((String)jTable1.getModel().getValueAt(i, 4)).equals(""))
+                try
                 {
-                    JOptionPane.showMessageDialog(null, "Заполните все поля.");
-                    break;
-                }
-                else if ((Integer)jTable1.getModel().getValueAt(i, 2) <= 0)
-                {
-                    JOptionPane.showMessageDialog(null, "Недопустимое колличество.");
-                    break;
-                }
-                else
-                {
-                    ConsumptionFacility cof = new ConsumptionFacility();
-                    for (Goods goods : MainUI.getGoodslist())
+                    if (((String)jTable1.getModel().getValueAt(i, 0)).equals("") ||
+                        ((String)jTable1.getModel().getValueAt(i, 1)).equals("") ||
+                        jTable1.getModel().getValueAt(i, 2) == null ||
+                        ((String)jTable1.getModel().getValueAt(i, 3)).equals("") ||
+                        ((String)jTable1.getModel().getValueAt(i, 4)).equals(""))
                     {
-                        if (goods.getName().equals((String)jTable1.getModel().getValueAt(i, 0)))
-                        {cof.setGoodsId(goods); System.err.println(goods.getId());}
+                        JOptionPane.showMessageDialog(null, "Заполните все поля.");
+                        break;
                     }
-                    for (Warehouses war : MainUI.getWarlist())
+                    else if ((Integer)jTable1.getModel().getValueAt(i, 2) <= 0)
                     {
-                        if (war.getName().equals((String)jTable1.getModel().getValueAt(i, 3)))
-                        {cof.setPassivePointId(war); System.err.println(war.getId());}
+                        JOptionPane.showMessageDialog(null, "Недопустимое колличество.");
+                        break;
                     }
-                    cof.setAmount(-1*((Integer)jTable1.getModel().getValueAt(i, 2)));
-                    cof.setTime(new Date());
-                    for (Facility facil : MainUI.getFacillist())
+                    else
                     {
-                        if (facil.getName().equals((String)jTable1.getModel().getValueAt(i, 1)))
-                        {cof.setActivePointId(facil); System.err.println(facil.getId());}
-                    }
-                    cof.setDocumentNumber((String)jTable1.getModel().getValueAt(i, 4));
-                    list.add(cof);
-                    if (i == jTable1.getModel().getRowCount() - 1)
-                    {
-                        int m = JOptionPane.showConfirmDialog(null, "Внести изменения в БД?",
-                            "Внимание", JOptionPane.YES_NO_OPTION);
-                        if (m == JOptionPane.YES_OPTION)
+                        ConsumptionFacility cof = new ConsumptionFacility();
+                        for (Goods goods : MainUI.getGoodslist())
                         {
-                            data.setValues(list);
-                            Warehouse war = new Warehouse();
-                            if (war.connect() == WarInterface.OK)
+                            if (goods.getName().equals((String)jTable1.getModel().getValueAt(i, 0)))
+                            {cof.setGoodsId(goods); System.err.println(goods.getId());}
+                        }
+                        for (Warehouses war : MainUI.getWarlist())
+                        {
+                            if (war.getName().equals((String)jTable1.getModel().getValueAt(i, 3)))
+                            {cof.setPassivePointId(war); System.err.println(war.getId());}
+                        }
+                        cof.setAmount(-1*((Integer)jTable1.getModel().getValueAt(i, 2)));
+                        cof.setTime(new Date());
+                        for (Facility facil : MainUI.getFacillist())
+                        {
+                            if (facil.getName().equals((String)jTable1.getModel().getValueAt(i, 1)))
+                            {cof.setActivePointId(facil); System.err.println(facil.getId());}
+                        }
+                        cof.setDocumentNumber((String)jTable1.getModel().getValueAt(i, 4));
+                        list.add(cof);
+                        if (i == jTable1.getModel().getRowCount() - 1)
+                        {
+                            int m = JOptionPane.showConfirmDialog(null, "Внести изменения в БД?",
+                                "Внимание", JOptionPane.YES_NO_OPTION);
+                            if (m == JOptionPane.YES_OPTION)
                             {
-                                war.run(data);
-                                war.disconnect();
+                                data.setValues(list);
+                                Warehouse war = new Warehouse();
+                                if (war.connect() == WarInterface.OK)
+                                {
+                                    war.run(data);
+                                    war.disconnect();
+                                }
+                                Data test = war.getTest();
+                                if (test.getOperation() == 0)
+                                {
+                                    JOptionPane.showMessageDialog(null, "Данные успешно внесены.");
+                                    dispose();
+                                    MainUI.getCatalog();
+                                }
+                                else if (test.getOperation() == 1)
+                                {
+                                    ConsumptionFacility amounterr = (ConsumptionFacility)test.getValues().get(0);
+                                    JOptionPane.showMessageDialog(null, "Недостаточное количество товара: " +
+                                        amounterr.getGoodsId().getName() + ". Доступно: " + amounterr.getAmount());
+                                }
+                                else if (test.getOperation() == -1)
+                                {JOptionPane.showMessageDialog(null, "Ошибка при внесении данных.");}
                             }
-                            Data test = war.getTest();
-                            if (test.getOperation() == 0)
-                            {
-                                JOptionPane.showMessageDialog(null, "Данные успешно внесены.");
-                                dispose();
-                                MainUI.getCatalog();
-                            }
-                            else if (test.getOperation() == 1)
-                            {
-                                ConsumptionFacility amounterr = (ConsumptionFacility)test.getValues().get(0);
-                                JOptionPane.showMessageDialog(null, "Недостаточное количество товара: " +
-                                    amounterr.getGoodsId().getName() + ". Доступно: " + amounterr.getAmount());
-                            }
-                            else if (test.getOperation() == -1)
-                            {JOptionPane.showMessageDialog(null, "Ошибка при внесении данных.");}
                         }
                     }
                 }
-            }
-            catch (NullPointerException ex)
-            {
-                System.err.println("Error-> " + ex.getMessage());
-                JOptionPane.showMessageDialog(null, "Заполните все поля.");
-                break;
+                catch (NullPointerException ex)
+                {
+                    System.err.println("Error-> " + ex.getMessage());
+                    JOptionPane.showMessageDialog(null, "Заполните все поля.");
+                    break;
+                }
             }
         }
     }//GEN-LAST:event_jButton3ActionPerformed

@@ -8,6 +8,7 @@ package frames;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import warehouse.Data;
 import warehouse.WarInterface;
 import warehouse.Warehouse;
@@ -168,7 +169,7 @@ public class LoginUI extends javax.swing.JFrame {
                 select.setVisible(true);
             }
         else if (test.getOperation() == -1)
-        {JOptionPane.showMessageDialog(null, "Неверный логин или пароль.");}
+        {JOptionPane.showMessageDialog(null, "Неверный логин или пароль.", "Ошибка авторизации", ERROR_MESSAGE);}
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jPasswordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField1ActionPerformed

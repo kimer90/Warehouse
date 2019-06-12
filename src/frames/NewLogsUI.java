@@ -367,7 +367,7 @@ public class NewLogsUI extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Импорт");
+        jButton2.setText("Экспорт");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
